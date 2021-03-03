@@ -5,6 +5,7 @@ Initialised with the tutorial at https://www.ackama.com/blog/posts/the-best-way-
 For full usage:
 
  - Zsh
+ - [Starship](https://starship.rs/) as a terminal prompt
  - [Neovim](https://neovim.io/) - use the [PPA](https://github.com/neovim/neovim/wiki/Installing-Neovim#ubuntu) if on Ubuntu, or the appimage (same page) is a failsafe for something like centos
  - [Ripgrep](https://github.com/BurntSushi/ripgrep) as an fzf.vim backend
  - [Bat](https://github.com/sharkdp/bat) for fzf.vim syntax highlighting
