@@ -5,6 +5,7 @@ Initialised with the tutorial at https://www.ackama.com/blog/posts/the-best-way-
 For full usage:
 
  - Zsh
+ - [Zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
  - [Starship](https://starship.rs/) as a terminal prompt
  - [Neovim](https://neovim.io/) - use the [PPA](https://github.com/neovim/neovim/wiki/Installing-Neovim#ubuntu) if on Ubuntu, or the appimage (same page) is a failsafe for something like centos
  - [Ripgrep](https://github.com/BurntSushi/ripgrep) as an fzf.vim backend
@@ -12,5 +13,6 @@ For full usage:
    - Currently broken if installing alongside Ripgrep on Ubuntu 20.04, requires a [workaround](https://github.com/sharkdp/bat/issues/938)
  - [Tmux Plugin Manager](https://github.com/tmux-plugins/tpm)
  - [Vim-plug](https://github.com/junegunn/vim-plug)
+ - [Nvm](https://github.com/nvm-sh/nvm)
  - [Firacode Nerdfont](https://www.nerdfonts.com/font-downloads) for the Windows Terminal config
 
