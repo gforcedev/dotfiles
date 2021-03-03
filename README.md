@@ -1,6 +1,10 @@
 # Gforcedev's Dotfiles
 Initialised with the tutorial at https://www.ackama.com/blog/posts/the-best-way-to-store-your-dotfiles-a-bare-git-repository-explained
 
+# Setup
+Can be set up by running the included script using curl:
+`curl -o https://raw.githubusercontent.com/gforcedev/dotfiles/main/scripts/config-setup-gforcedev.sh | bash`
+
 # Required installation
 For full usage:
 
