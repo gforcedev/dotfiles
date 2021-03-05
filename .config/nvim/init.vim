@@ -123,8 +123,23 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
 
 " --- Yank modifications ---
 " {{{
-	" yank to xclip
+	if !empty($WSLPATH)
+		let g:clipboard = {
+		\   'name': 'win32yank-wsl',
+		\   'copy': {
+		\      '+': 'win32yank.exe -i --crlf',
+		\      '*': 'win32yank.exe -i --crlf',
+		\    },
+		\   'paste': {
+		\      '+': 'win32yank.exe -o --lf',
+		\      '*': 'win32yank.exe -o --lf',
+		\   },
+		\   'cache_enabled': 0,
+		\ }
+	endif
+	" yank to a linux system clipboard if available
 	set clipboard+=unnamedplus
+
 	" make x yank somewhere else irrelevant
 	nnoremap x "_x
 	vnoremap x "_x

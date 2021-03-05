@@ -18,5 +18,6 @@ For full usage:
  - [Tmux Plugin Manager](https://github.com/tmux-plugins/tpm)
  - [Vim-plug](https://github.com/junegunn/vim-plug)
  - [Nvm](https://github.com/nvm-sh/nvm)
+ - [W32yank](https://github.com/equalsraf/win32yank) for vim clipboard sharing to windows through wsl - it can go in /usr/local/bin
  - [Firacode Nerdfont](https://www.nerdfonts.com/font-downloads) for the Windows Terminal config
 
