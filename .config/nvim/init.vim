@@ -214,7 +214,7 @@ Plug 'tpope/vim-surround'
 	Plug 'junegunn/fzf.vim'
 
 	" default fzf command: use rg --files to exclude gitignore but keep everything else
-	let $FZF_DEFAULT_COMMAND = 'rg --files --hidden'
+	let $FZF_DEFAULT_COMMAND = 'rg --files --hidden -g "!.git/"'
 	nnoremap <C-p> :Files<CR>
 	" currently open buffers
 	nnoremap <leader>; :Buffers<CR>
