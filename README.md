@@ -3,7 +3,7 @@ Initialised with the tutorial at https://www.ackama.com/blog/posts/the-best-way-
 
 # Setup
 Can be set up by running the included script using curl:
-`curl -o https://raw.githubusercontent.com/gforcedev/dotfiles/main/scripts/config-setup-gforcedev.sh | bash`
+`curl -o- https://raw.githubusercontent.com/gforcedev/dotfiles/main/scripts/config-setup-gforcedev.sh | bash`
 
 # Required installation
 For full usage:
