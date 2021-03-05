@@ -286,9 +286,16 @@ Plug 'airblade/vim-gitgutter'
 " Vim-airline for a pretty status bar
 " {{{
 	Plug 'vim-airline/vim-airline'
-	let g:airline_theme='onedark'
 
-	" Don't show the mode because airline has it already
+	let g:airline_theme='onedark'
+	
+	" Use powerline symbols
+	let g:airline_powerline_fonts = 1
+	if !exists('g:airline_symbols')
+		let g:airline_symbols = {}
+	endif
+
+	" Airline has the mode on so don't need to show again
 	set noshowmode
 " }}}
 
