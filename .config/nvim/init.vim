@@ -12,6 +12,9 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
 	Plug 'lervag/vimtex'
 	let g:tex_flavor = 'latex'
 	let g:vimtex_quickfix_open_on_warning = 0 " don't open a split to show warnings
+
+	" prisma support
+	Plug 'pantharshit00/vim-prisma'
 "}}}
 
 " --- coc.nvim for lsp integration ---
@@ -153,6 +156,10 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
 	" Map for entering paste mode which will stop continue
 	" comment when pasting code through a terminal emulator
 	map <silent> <leader>p :set paste!<cr>
+
+	" splits on the other side
+	set splitright
+	set splitbelow
 " }}}
 
 " vim-lion for vertical alignment (eg of multiple variable assignments)
