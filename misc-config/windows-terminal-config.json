@@ -22,8 +22,12 @@
     "keybindings": [
         {
             "command": "unbound",
-            "keys": "alt+enter"
-        }
+            "keys": ["alt+enter"]
+        },
+        {
+            "command": "unbound",
+            "keys": ["ctrl+shift+z"]
+        },
     ],
 
     // A profile specifies a command to execute paired with information about how it should look and feel.
@@ -87,3 +91,4 @@
         { "command": "find", "keys": "ctrl+shift+f" },
     ]
 }
+
