@@ -5,8 +5,12 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
 
 " --- vim-polyglot for syntax highlighting and autoindent with equals ---
 " {{{
-	let g:polyglot_disabled = ['latex'] " vimtex for latex instead
+	" disable polyglot languages that use other plugins
+	let g:polyglot_disabled = ['latex', 'svelte']
 	Plug 'sheerun/vim-polyglot'
+
+	" yes to jsdoc highlighting
+	let g:javascript_plugin_jsdoc = 1
 
 	" vimtex instead for latex
 	Plug 'lervag/vimtex'
@@ -15,6 +19,9 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
 
 	" prisma support
 	Plug 'pantharshit00/vim-prisma'
+
+	" instead for svelte
+	Plug 'leafOfTree/vim-svelte-plugin'
 "}}}
 
 " --- coc.nvim for lsp integration ---
@@ -84,9 +91,9 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
 	" GoTo definition
 	nmap <silent> gd <Plug>(coc-definition)
 
-	nnoremap <silent> <C-.> <Plug>(coc-fix-current)
+	nmap <silent> <m-.> <Plug>(coc-fix-current)
 
-	nnoremap <silent> <F2> <Plug>(coc-rename)
+	nmap <silent> <F2> <Plug>(coc-rename)
 
 	" Highlight symbol under cursor on CursorHold
 	autocmd CursorHold * silent call CocActionAsync('highlight')
