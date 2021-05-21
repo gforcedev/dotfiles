@@ -247,6 +247,8 @@ Plug 'tpope/vim-surround'
 	nnoremap <C-p> :Files<CR>
 	" currently open buffers
 	nnoremap <leader>; :Buffers<CR>
+	" global find
+	nnoremap <C-f> :Rg<CR>
 	" fzf keybinds to open in splits, same as nerdtree's
 	let g:fzf_action = {
 		\'ctrl-i': 'split',
@@ -292,7 +294,7 @@ Plug 'airblade/vim-gitgutter'
 
 	syntax on
 
-	Plug 'joshdick/onedark.vim'
+	Plug 'arcticicestudio/nord-vim'
 
 	" colorscheme set and transparency enabled after plug#end
 " }}}
@@ -301,7 +303,7 @@ Plug 'airblade/vim-gitgutter'
 " {{{
 	Plug 'vim-airline/vim-airline'
 
-	let g:airline_theme='onedark'
+	let g:airline_theme='nord'
 	
 	" Use powerline symbols
 	let g:airline_powerline_fonts = 1
@@ -348,5 +350,5 @@ Plug 'ryanoasis/vim-devicons'
 call plug#end()
 
 " Set colorscheme and transparency
-colorscheme onedark
+colorscheme nord
 hi Normal guibg=NONE ctermbg=NONE
