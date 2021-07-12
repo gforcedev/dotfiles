@@ -34,6 +34,7 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
 		\'coc-pairs',
 		\'coc-tsserver',
 		\'coc-eslint',
+		\'coc-prettier',
 	\]
 
 	" Some servers have issues with backup files, see #649.
