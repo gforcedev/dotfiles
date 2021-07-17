@@ -41,6 +41,7 @@ else
 	export EDITOR='nvim'
 fi
 
+alias nvim="~/appimages/nvim.appimage"
 alias vim="nvim"
 alias ls="ls --color"
 
