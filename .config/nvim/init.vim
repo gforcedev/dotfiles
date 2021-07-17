@@ -254,7 +254,8 @@ Plug 'tpope/vim-surround'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 
     nnoremap <C-p> <cmd>Telescope find_files<cr>
-    nnoremap <C-u> <cmd>Telescope live_grep<cr>
+    nnoremap <leader>lg <cmd>Telescope live_grep<cr>
+    nnoremap <leader>rg <cmd>Telescope grep_string<cr>
     nnoremap <leader>; <cmd>Telescope buffers<cr>
 " }}}
 
@@ -372,7 +373,7 @@ require('telescope').setup {
 
         extensions = {
             fzy_native = {
-                override_generic_sorter = false,
+                override_generic_sorter = true,
                 override_file_sorter = true,
             }
         }
