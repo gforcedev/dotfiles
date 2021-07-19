@@ -173,6 +173,9 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
     " splits on the other side
     set splitright
     set splitbelow
+
+    " mouse
+	set mouse=a
 " }}}
 
 " vim-lion for vertical alignment (eg of multiple variable assignments)
@@ -328,6 +331,10 @@ Plug 'airblade/vim-gitgutter'
 
 " Gitgutter for seeing VCS changes
 Plug 'tpope/vim-fugitive'
+
+" Allows :GBrowse to open file on gitlab
+Plug 'shumphrey/fugitive-gitlab.vim'
+let g:fugitive_gitlab_domains = ['https://gitlab.netcraft.com']
 
 " Devicons - must go last
 Plug 'kyazdani42/nvim-web-devicons'
