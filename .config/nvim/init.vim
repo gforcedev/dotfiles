@@ -259,6 +259,7 @@ Plug 'tpope/vim-surround'
     nnoremap <C-p> <cmd>Telescope find_files<cr>
     nnoremap <leader>lg <cmd>Telescope live_grep<cr>
     nnoremap <leader>rg <cmd>Telescope grep_string<cr>
+    nnoremap <leader>fb <cmd>Telescope file_browser<cr>
     nnoremap <leader>; <cmd>Telescope buffers<cr>
 " }}}
 
