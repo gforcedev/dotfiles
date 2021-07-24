@@ -2,11 +2,10 @@ set nocompatible
 call plug#begin('~/.local/share/nvim/site/plugged/')
 
 " ---------- LANGUAGE FEATURES ----------
-
 " --- vim-polyglot for syntax highlighting and autoindent with equals ---
 " {{{
     " disable polyglot languages that use other plugins
-    let g:polyglot_disabled = ['latex', 'svelte']
+    let g:polyglot_disabled = ['latex', 'svelte', 'javascript', 'typescript', 'json', 'php', 'yaml', 'perl']
     Plug 'sheerun/vim-polyglot'
 
     " yes to jsdoc highlighting
@@ -24,80 +23,35 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
     Plug 'leafOfTree/vim-svelte-plugin'
 " }}}
 
-" --- coc.nvim for lsp integration ---
+" --- nvim lsp things
 " {{{
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    " lspconfig for doing the things
+    Plug 'neovim/nvim-lspconfig'
 
-    " install coc extensions for various languages
-    let g:coc_global_extensions = [
-        \'coc-snippets',
-        \'coc-pairs',
-        \'coc-tsserver',
-        \'coc-eslint',
-    \]
+    " lspsaga for bonus and prettiness
+    Plug 'glepnir/lspsaga.nvim'
+    nnoremap <silent> <C-j> <Cmd>Lspsaga diagnostic_jump_next<CR>
+    nnoremap <silent>K <Cmd>Lspsaga hover_doc<CR>
+    inoremap <silent> <C-k> <Cmd>Lspsaga signature_help<CR>
+    nnoremap <silent> gh <Cmd>Lspsaga lsp_finder<CR>
 
-    " Some servers have issues with backup files, see #649.
-    set nobackup
-    set nowritebackup
+    " treesitter for thing parsing
+    Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }
 
-    set updatetime=300 " update diagnostic messages more regularly than 4s
+    " completion for completion
+    Plug 'nvim-lua/completion-nvim'
+    set completeopt=menuone,noinsert,noselect
+    imap <silent> <C-Space> <Plug>(completion_trigger)
 
-    " Don't pass messages to |ins-completion-menu|.
-    set shortmess+=c
+    " Use <Tab> and <S-Tab> to navigate through popup menu
+    inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-    " Always show the signcolumn, otherwise it would shift the text each time
-    " diagnostics appear/become resolved.
-    if has("patch-8.1.1564")
-        " Recently vim can merge signcolumn and number column into one
-        set signcolumn=number
-    else
-        set signcolumn=yes
-    endif
-
-    " K to show documentation
-    nnoremap <silent> K :call <SID>show_documentation()<CR>
-    function! s:show_documentation()
-        if (index(['vim','help'], &filetype) >= 0)
-            execute 'h '.expand('<cword>')
-        else
-            call CocAction('doHover')
-        endif
-    endfunction
-
-    " Use <c-space> to trigger completion.
-    inoremap <silent><expr> <c-space> coc#refresh()
-
-    " Use tab for trigger completion with characters ahead and navigate.
-    " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-    inoremap <silent><expr> <TAB>
-        \ pumvisible() ? "\<C-n>" :
-        \ <SID>check_back_space() ? "\<TAB>" :
-        \ coc#refresh()
-    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-    function! s:check_back_space() abort
-        let col = col('.') - 1
-        return !col || getline('.')[col - 1]  =~# '\s'
-    endfunction
-
-    " Use `[g` and `]g` to navigate diagnostics
-    " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-    nmap <silent> [g <Plug>(coc-diagnostic-prev)
-    nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-    " Use <c-l> to expand snippet
-    imap <C-l> <Plug>(coc-snippets-expand)
-
-    " GoTo definition
-    nmap <silent> gd <Plug>(coc-definition)
-
-    nmap <silent> <m-.> <Plug>(coc-fix-current)
-
-    nmap <silent> <F2> <Plug>(coc-rename)
-
-    " Highlight symbol under cursor on CursorHold
-    autocmd CursorHold * silent call CocActionAsync('highlight')
+    let g:completion_confirm_key = ""
+    imap <expr> <cr>  pumvisible() ? complete_info()["selected"] != "-1" ?
+                \ "\<Plug>(completion_confirm_completion)"  : "\<c-e>\<CR>" :  "\<CR>"
 " }}}
+
 
 " --- vimspector for debugging ---
 " {{{
@@ -178,6 +132,11 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
 	set mouse=a
 " }}}
 
+" auto-pairs for auto pairs
+" {{{
+    Plug 'jiangmiao/auto-pairs'
+" }}}
+
 " vim-lion for vertical alignment (eg of multiple variable assignments)
 " {{{
     Plug 'tommcdo/vim-lion'
@@ -252,6 +211,8 @@ Plug 'tpope/vim-surround'
     let g:minimap_width = 10
     let g:minimap_auto_start = 1
     let g:minimap_auto_start_win_enter = 1
+    let g:minimap_highlight_range = 1
+    let g:minimap_git_colors = 1
 " }}}
 
 " --- Telescope for searching n stuff ---
@@ -273,7 +234,6 @@ Plug 'tpope/vim-surround'
 
 " Fugitive for many many git tools
 Plug 'airblade/vim-gitgutter'
-
 
 " ---------- INTERFACE ----------
 
@@ -393,6 +353,84 @@ require('telescope').setup {
                 override_file_sorter = true,
             }
         }
+    }
+}
+
+-- LSP things
+local nvim_lsp = require('lspconfig')
+local protocol = require('vim.lsp.protocol')
+
+local on_attach = function(client, bufnr)
+    local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+    local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+
+    -- Mappings
+    local opts = { noremap = true, silent = true }
+
+    buf_set_keymap('n', 'gd', '<Cmd> lua vim.lsp.buf.definition()<CR>', opts)
+    require 'completion'.on_attach(client)
+
+    --protocol.SymbolKind = { }
+    protocol.CompletionItemKind = {
+        '', -- Text
+        '', -- Method
+        '', -- Function
+        '', -- Constructor
+        '', -- Field
+        '', -- Variable
+        '', -- Class
+        'ﰮ', -- Interface
+        '', -- Module
+        '', -- Property
+        '', -- Unit
+        '', -- Value
+        '', -- Enum
+        '', -- Keyword
+        '﬌', -- Snippet
+        '', -- Color
+        '', -- File
+        '', -- Reference
+        '', -- Folder
+        '', -- EnumMember
+        '', -- Constant
+        '', -- Struct
+        '', -- Event
+        'ﬦ', -- Operator
+        '', -- TypeParameter
+    }
+end
+
+nvim_lsp.tsserver.setup {
+    on_attach = on_attach,
+    filetypes = { 'javascript', 'typescript' }
+}
+
+local saga = require 'lspsaga'
+
+saga.init_lsp_saga {
+    error_sign = '',
+    warn_sign = '',
+    hint_sign = '',
+    infor_sign = '',
+    border_style = 'round',
+}
+
+local parser_config = require 'nvim-treesitter.parsers'.get_parser_configs()
+require 'nvim-treesitter.configs'.setup {
+    highlight = {
+        enable = true,
+        disable = {},
+    },
+    indent = {
+        enable = false,
+        disable = {}
+    },
+    ensure_installed = {
+        'json',
+        'javascript',
+        'typescript',
+        'php',
+        'yaml'
     }
 }
 
