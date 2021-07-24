@@ -301,6 +301,9 @@ Plug 'airblade/vim-gitgutter'
 " Gitgutter for seeing VCS changes
 Plug 'tpope/vim-fugitive'
 
+" Allows :GBrowse to open file on github
+Plug 'tpope/vim-rhubarb'
+
 " Allows :GBrowse to open file on gitlab
 Plug 'shumphrey/fugitive-gitlab.vim'
 let g:fugitive_gitlab_domains = ['https://gitlab.netcraft.com']
