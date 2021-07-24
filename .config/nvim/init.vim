@@ -212,7 +212,6 @@ Plug 'tpope/vim-surround'
     let g:minimap_auto_start = 1
     let g:minimap_auto_start_win_enter = 1
     let g:minimap_highlight_range = 1
-    let g:minimap_git_colors = 1
 " }}}
 
 " --- Telescope for searching n stuff ---
@@ -405,7 +404,11 @@ end
 
 nvim_lsp.tsserver.setup {
     on_attach = on_attach,
-    filetypes = { 'javascript', 'typescript' }
+    filetypes = { 'javascript', 'typescript' },
+}
+nvim_lsp.svelte.setup {
+    on_attach = on_attach,
+    filetypes = { 'svelte' },
 }
 
 local saga = require 'lspsaga'
