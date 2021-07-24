@@ -246,6 +246,14 @@ Plug 'tpope/vim-surround'
     map <silent> <c-n> :NERDTreeToggle<cr>
 " }}}
 
+" --- Minimap ---
+" {{{
+    Plug 'wfxr/minimap.vim'
+    let g:minimap_width = 10
+    let g:minimap_auto_start = 1
+    let g:minimap_auto_start_win_enter = 1
+" }}}
+
 " --- Telescope for searching n stuff ---
 " {{{
 "
