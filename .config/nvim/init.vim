@@ -34,6 +34,7 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
     nnoremap <silent>K <Cmd>Lspsaga hover_doc<CR>
     inoremap <silent> <C-k> <Cmd>Lspsaga signature_help<CR>
     nnoremap <silent> gh <Cmd>Lspsaga lsp_finder<CR>
+    nnoremap <silent> <F2> <cmd>Lspsaga rename<CR>
 
     " treesitter for thing parsing
     Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }
@@ -42,6 +43,8 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
     Plug 'nvim-lua/completion-nvim'
     set completeopt=menuone,noinsert,noselect
     imap <silent> <C-Space> <Plug>(completion_trigger)
+    " for ssh where <C-Space> doesn't work
+    imap <silent> <C-.> <Plug>(completion_trigger)
 
     " Use <Tab> and <S-Tab> to navigate through popup menu
     inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
@@ -402,6 +405,49 @@ local on_attach = function(client, bufnr)
     }
 end
 
+nvim_lsp.diagnosticls.setup {
+    filetypes = {"javascript", "javascriptreact", "typescript", "typescriptreact", "css"},
+    init_options = {
+        filetypes = {
+            javascript = "eslint",
+            typescript = "eslint",
+            javascriptreact = "eslint",
+            typescriptreact = "eslint"
+        },
+        linters = {
+            eslint = {
+                sourceName = "eslint",
+                command = "./node_modules/.bin/eslint",
+                rootPatterns = {
+                    ".eslitrc.js",
+                    "package.json"
+                },
+                debounce = 100,
+                args = {
+                    "--cache",
+                    "--stdin",
+                    "--stdin-filename",
+                    "%filepath",
+                    "--format",
+                    "json"
+                },
+                parseJson = {
+                    errorsRoot = "[0].messages",
+                    line = "line",
+                    column = "column",
+                    endLine = "endLine",
+                    endColumn = "endColumn",
+                    message = "${message} [${ruleId}]",
+                    security = "severity"
+                },
+                securities = {
+                    [2] = "error",
+                    [1] = "warning"
+                }
+            }
+        }
+    }
+}
 nvim_lsp.tsserver.setup {
     on_attach = on_attach,
     filetypes = { 'javascript', 'typescript' },
@@ -409,6 +455,44 @@ nvim_lsp.tsserver.setup {
 nvim_lsp.svelte.setup {
     on_attach = on_attach,
     filetypes = { 'svelte' },
+	filetypes = {
+      javascript = "eslint",
+      typescript = "eslint",
+      javascriptreact = "eslint",
+      typescriptreact = "eslint"
+    },
+    linters = {
+      eslint = {
+        sourceName = "eslint",
+        command = "eslint",
+        rootPatterns = {
+          ".eslitrc.js",
+          "package.json"
+        },
+        debounce = 100,
+        args = {
+          "--cache",
+          "--stdin",
+          "--stdin-filename",
+          "%filepath",
+          "--format",
+          "json"
+        },
+        parseJson = {
+          errorsRoot = "[0].messages",
+          line = "line",
+          column = "column",
+          endLine = "endLine",
+          endColumn = "endColumn",
+          message = "${message} [${ruleId}]",
+          security = "severity"
+        },
+        securities = {
+          [2] = "error",
+          [1] = "warning"
+        }
+      }
+    }
 }
 
 local saga = require 'lspsaga'
@@ -419,6 +503,9 @@ saga.init_lsp_saga {
     hint_sign = '',
     infor_sign = '',
     border_style = 'round',
+    finder_action_keys = {
+        open = '<CR>', vsplit = '<C-s>', split = '<C-i>', quit = '<esc>' scroll_down = '<C-d>', scroll_up = '<C-u>'
+    }
 }
 
 local parser_config = require 'nvim-treesitter.parsers'.get_parser_configs()
@@ -454,8 +541,8 @@ require('lualine').setup {
         lualine_b = {'branch'},
         lualine_c = {'filename'},
         lualine_x = {'encoding', 'fileformat', 'filetype'},
-        lualine_y = {'progress'},
-        lualine_z = {'location'}
+        lualine_y = {require 'nvim-treesitter'.statusline},
+        lualine_z = {'location', 'progress'}
     },
     inactive_sections = {
         lualine_a = {},
