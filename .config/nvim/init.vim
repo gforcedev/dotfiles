@@ -32,8 +32,6 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
     Plug 'glepnir/lspsaga.nvim'
     nnoremap <silent> <C-j> <Cmd>Lspsaga diagnostic_jump_next<CR>
     nnoremap <silent>K <Cmd>Lspsaga hover_doc<CR>
-    inoremap <silent> <C-k> <Cmd>Lspsaga signature_help<CR>
-    nnoremap <silent> gh <Cmd>Lspsaga lsp_finder<CR>
     nnoremap <silent> <F2> <cmd>Lspsaga rename<CR>
 
     " treesitter for thing parsing
@@ -131,8 +129,12 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
     set splitright
     set splitbelow
 
-    " mouse
-	set mouse=a
+    " mouse scrolling, but disable the buttons
+    set mouse=a
+    :nmap <LeftMouse> <nop>
+    :imap <LeftMouse> <nop>
+    :vmap <LeftMouse> <nop>
+    :nmap <2-LeftMouse> <nop>
 " }}}
 
 " auto-pairs for auto pairs
@@ -228,8 +230,9 @@ Plug 'tpope/vim-surround'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 
     nnoremap <C-p> <cmd>Telescope find_files<cr>
-    nnoremap <leader>lg <cmd>Telescope live_grep<cr>
     nnoremap <leader>rg <cmd>Telescope grep_string<cr>
+    nnoremap <leader>lg <cmd>Telescope live_grep<cr>
+    nnoremap <leader>lr <cmd>Telescope lsp_references<cr>
     nnoremap <leader>fb <cmd>Telescope file_browser<cr>
     nnoremap <leader>; <cmd>Telescope buffers<cr>
 " }}}
@@ -504,8 +507,8 @@ saga.init_lsp_saga {
     infor_sign = '',
     border_style = 'round',
     finder_action_keys = {
-        open = '<CR>', vsplit = '<C-s>', split = '<C-i>', quit = '<esc>' scroll_down = '<C-d>', scroll_up = '<C-u>'
-    }
+        open = '<CR>', vsplit = '<C-s>', split = '<C-i>', quit = '<esc>', scroll_down = '<C-d>', scroll_up = '<C-u>',
+    },
 }
 
 local parser_config = require 'nvim-treesitter.parsers'.get_parser_configs()
