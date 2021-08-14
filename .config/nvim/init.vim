@@ -37,20 +37,17 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
     " treesitter for thing parsing
     Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }
 
-    " completion for completion
-    Plug 'nvim-lua/completion-nvim'
+    " compe for completion
+    Plug 'hrsh7th/nvim-compe'
     set completeopt=menuone,noinsert,noselect
-    imap <silent> <C-Space> <Plug>(completion_trigger)
+
+    inoremap <silent><expr> <C-Space> compe#complete()
     " for ssh where <C-Space> doesn't work
-    imap <silent> <C-.> <Plug>(completion_trigger)
+    inoremap <silent><expr> <C-.> compe#complete()
 
     " Use <Tab> and <S-Tab> to navigate through popup menu
     inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
     inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-
-    let g:completion_confirm_key = ""
-    imap <expr> <cr>  pumvisible() ? complete_info()["selected"] != "-1" ?
-                \ "\<Plug>(completion_confirm_completion)"  : "\<c-e>\<CR>" :  "\<CR>"
 " }}}
 
 
@@ -135,6 +132,10 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
     :imap <LeftMouse> <nop>
     :vmap <LeftMouse> <nop>
     :nmap <2-LeftMouse> <nop>
+
+    " C-j and C-k for quickfix moving
+    nnoremap <C-j> :cnext<CR>
+    nnoremap <C-k> :cprev<CR>
 " }}}
 
 " auto-pairs for auto pairs
@@ -208,15 +209,6 @@ Plug 'tpope/vim-surround'
     autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 
     map <silent> <c-n> :NERDTreeToggle<cr>
-" }}}
-
-" --- Minimap ---
-" {{{
-    Plug 'wfxr/minimap.vim'
-    let g:minimap_width = 10
-    let g:minimap_auto_start = 1
-    let g:minimap_auto_start_win_enter = 1
-    let g:minimap_highlight_range = 1
 " }}}
 
 " --- Telescope for searching n stuff ---
@@ -455,48 +447,7 @@ nvim_lsp.tsserver.setup {
     on_attach = on_attach,
     filetypes = { 'javascript', 'typescript' },
 }
-nvim_lsp.svelte.setup {
-    on_attach = on_attach,
-    filetypes = { 'svelte' },
-	filetypes = {
-      javascript = "eslint",
-      typescript = "eslint",
-      javascriptreact = "eslint",
-      typescriptreact = "eslint"
-    },
-    linters = {
-      eslint = {
-        sourceName = "eslint",
-        command = "eslint",
-        rootPatterns = {
-          ".eslitrc.js",
-          "package.json"
-        },
-        debounce = 100,
-        args = {
-          "--cache",
-          "--stdin",
-          "--stdin-filename",
-          "%filepath",
-          "--format",
-          "json"
-        },
-        parseJson = {
-          errorsRoot = "[0].messages",
-          line = "line",
-          column = "column",
-          endLine = "endLine",
-          endColumn = "endColumn",
-          message = "${message} [${ruleId}]",
-          security = "severity"
-        },
-        securities = {
-          [2] = "error",
-          [1] = "warning"
-        }
-      }
-    }
-}
+nvim_lsp.svelte.setup {}
 
 local saga = require 'lspsaga'
 
@@ -528,6 +479,38 @@ require 'nvim-treesitter.configs'.setup {
         'php',
         'yaml'
     }
+}
+
+-- Compe
+require'compe'.setup {
+    enabled = true;
+    autocomplete = true;
+    debug = false;
+    min_length = 1;
+    preselect = 'enable';
+    throttle_time = 80;
+    source_timeout = 200;
+    resolve_timeout = 800;
+    incomplete_delay = 400;
+    max_abbr_width = 100;
+    max_kind_width = 100;
+    max_menu_width = 100;
+    documentation = {
+        border = { '', '' ,'', ' ', '', '', '', ' ' }, -- the border option is the same as `|help nvim_open_win|`
+        winhighlight = "NormalFloat:CompeDocumentation,FloatBorder:CompeDocumentationBorder",
+        max_width = 120,
+        min_width = 60,
+        max_height = math.floor(vim.o.lines * 0.3),
+        min_height = 1,
+    };
+
+    source = {
+        path = true;
+        buffer = true;
+        calc = true;
+        nvim_lsp = true;
+        nvim_lua = true;
+    };
 }
 
 -- Lualine
