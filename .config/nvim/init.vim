@@ -140,7 +140,7 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
 
 " auto-pairs for auto pairs
 " {{{
-    Plug 'jiangmiao/auto-pairs'
+    Plug 'windwp/nvim-autopairs'
 " }}}
 
 " vim-lion for vertical alignment (eg of multiple variable assignments)
@@ -468,8 +468,7 @@ require 'nvim-treesitter.configs'.setup {
         disable = {},
     },
     indent = {
-        enable = false,
-        disable = {}
+        enable = true
     },
     ensure_installed = {
         'json',
@@ -479,6 +478,13 @@ require 'nvim-treesitter.configs'.setup {
         'yaml'
     }
 }
+
+require('nvim-autopairs').setup{}
+require("nvim-autopairs.completion.compe").setup({
+  map_cr = true, --  map <CR> on insert mode
+  map_complete = true, -- it will auto insert `(` after select function or method item
+  auto_select = false,  -- auto select first item
+})
 
 -- Compe
 require'compe'.setup {
@@ -494,6 +500,7 @@ require'compe'.setup {
     max_abbr_width = 100;
     max_kind_width = 100;
     max_menu_width = 100;
+
     documentation = {
         border = { '', '' ,'', ' ', '', '', '', ' ' }, -- the border option is the same as `|help nvim_open_win|`
         winhighlight = "NormalFloat:CompeDocumentation,FloatBorder:CompeDocumentationBorder",
