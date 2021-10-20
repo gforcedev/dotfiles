@@ -165,6 +165,11 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
     let g:NERDTrimTrailingWhitespace = 1
 " }}}
 
+" Emmet for emmetting
+" {{{
+    Plug 'mattn/emmet-vim'
+" }}}
+
 " Vim-surround for working with quotes and tags
 Plug 'tpope/vim-surround'
 
@@ -191,6 +196,10 @@ Plug 'tpope/vim-surround'
     map <silent> <leader>bn :bnext<cr>
     map <silent> <leader>bp :bprevious<cr>
     map <silent> <leader>bc <plug>(kwbd)
+
+    map <silent> <leader>tn :tabnext<cr>
+    map <silent> <leader>tp :tabprevious<cr>
+    map <silent> <leader>tc :tabclose<cr>
 " }}}
 
 " --- NERDTree as a file window ---
@@ -226,6 +235,7 @@ Plug 'tpope/vim-surround'
     nnoremap <leader>lg <cmd>Telescope live_grep<cr>
     nnoremap <leader>lr <cmd>Telescope lsp_references<cr>
     nnoremap <leader>fb <cmd>Telescope file_browser<cr>
+    nnoremap <leader>ls <cmd>Telescope git_status<cr>
     nnoremap <leader>; <cmd>Telescope buffers<cr>
 " }}}
 
@@ -268,6 +278,8 @@ Plug 'airblade/vim-gitgutter'
 
     let g:nord_contrast = 0
     Plug 'shaunsingh/nord.nvim'
+
+    Plug 'navarasu/onedark.nvim'
 
     " colorscheme set and transparency enabled after plug#end
 " }}}
@@ -312,7 +324,10 @@ call plug#end()
 " Things which need to happen after plug#end
 
 " Colorscheme things
-colorscheme nord
+let g:onedark_disable_terminal_colors = 1
+let g:onedark_diagnostics_undercurl = 0
+let g:onedark_transparent_background = 1
+colorscheme onedark
 hi Normal guibg=NONE ctermbg=NONE
 " Hightlight trailing spaces
 " {{{
@@ -523,7 +538,7 @@ require'compe'.setup {
 require('lualine').setup {
     options = {
         icons_enabled = true,
-        theme = 'nord',
+        theme = 'onedark',
         component_separators = {'', ''},
         section_separators = {'', ''},
         disabled_filetypes = {}
