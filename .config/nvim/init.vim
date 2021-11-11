@@ -200,6 +200,9 @@ Plug 'tpope/vim-surround'
     map <silent> <leader>tn :tabnext<cr>
     map <silent> <leader>tp :tabprevious<cr>
     map <silent> <leader>tc :tabclose<cr>
+    " fullscreen a buffer by opening it in a new tab
+
+    map <silent> <leader>tt :tab split<cr>
 " }}}
 
 " --- NERDTree as a file window ---
