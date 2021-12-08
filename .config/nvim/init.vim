@@ -38,16 +38,26 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
     Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }
 
     " compe for completion
-    Plug 'hrsh7th/nvim-compe'
-    set completeopt=menuone,noinsert,noselect
+    " Plug 'hrsh7th/nvim-compe'
+    " set completeopt=menuone,noinsert,noselect
 
-    inoremap <silent><expr> <C-Space> compe#complete()
-    " for ssh where <C-Space> doesn't work
-    inoremap <silent><expr> <C-.> compe#complete()
+    " inoremap <silent><expr> <C-Space> compe#complete()
+    " " for ssh where <C-Space> doesn't work
+    " inoremap <silent><expr> <C-.> compe#complete()
 
-    " Use <Tab> and <S-Tab> to navigate through popup menu
-    inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+    " " Use <Tab> and <S-Tab> to navigate through popup menu
+    " inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+    " inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+    " Cmp for completion
+    Plug 'hrsh7th/cmp-nvim-lsp'
+    Plug 'hrsh7th/cmp-buffer'
+    Plug 'hrsh7th/cmp-path'
+    Plug 'hrsh7th/cmp-cmdline'
+    Plug 'hrsh7th/nvim-cmp'
+    " Need luasnip apparently
+    Plug 'L3MON4D3/LuaSnip'
+    set completeopt=menu,menuone,noselect
 " }}}
 
 
@@ -78,6 +88,8 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
         \ 'sexp_swap_element_backward':     '',
         \ 'sexp_swap_element_forward':      '',
     \ }
+
+    let g:sexp_enable_insert_mode_mappings = 0
 
     Plug 'tpope/vim-sexp-mappings-for-regular-people'
 " }}}
@@ -534,44 +546,77 @@ require 'nvim-treesitter.configs'.setup {
 require('nvim-autopairs').setup {
     enable_check_bracket_line = false
 }
-require("nvim-autopairs.completion.compe").setup({
-  map_cr = true, --  map <CR> on insert mode
-  map_complete = true, -- it will auto insert `(` after select function or method item
-  auto_select = false,  -- auto select first item
-})
+-- require("nvim-autopairs.completion.compe").setup({
+  -- map_cr = true, --  map <CR> on insert mode
+  -- map_complete = true, -- it will auto insert `(` after select function or method item
+  -- auto_select = false,  -- auto select first item
+-- })
 
--- Compe
-require'compe'.setup {
-    enabled = true;
-    autocomplete = true;
-    debug = false;
-    min_length = 1;
-    preselect = 'enable';
-    throttle_time = 80;
-    source_timeout = 200;
-    resolve_timeout = 800;
-    incomplete_delay = 400;
-    max_abbr_width = 100;
-    max_kind_width = 100;
-    max_menu_width = 100;
+-- cmp
+local luasnip = require 'luasnip'
+local cmp = require 'cmp'
 
-    documentation = {
-        border = { '', '' ,'', ' ', '', '', '', ' ' }, -- the border option is the same as `|help nvim_open_win|`
-        winhighlight = "NormalFloat:CompeDocumentation,FloatBorder:CompeDocumentationBorder",
-        max_width = 120,
-        min_width = 60,
-        max_height = math.floor(vim.o.lines * 0.3),
-        min_height = 1,
-    };
+local has_words_before = function()
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
+end
 
-    source = {
-        path = true;
-        buffer = true;
-        calc = true;
-        nvim_lsp = true;
-        nvim_lua = true;
-    };
-}
+cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        require('luasnip').lsp_expand(args.body)
+      end,
+    },
+    mapping = {
+      ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
+      ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+      ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
+      ["<Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_next_item()
+        elseif luasnip.expand_or_jumpable() then
+          luasnip.expand_or_jump()
+        elseif has_words_before() then
+          cmp.complete()
+        else
+          fallback()
+        end
+      end, { "i", "s" }),
+
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+    },
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      { name = 'luasnip' }, -- For luasnip users.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+
+  -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline('/', {
+    sources = {
+      { name = 'buffer' }
+    }
+  })
+
+  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline(':', {
+    sources = cmp.config.sources({
+      { name = 'path' }
+    }, {
+      { name = 'cmdline' }
+    })
+  })
 
 -- Lualine
 require('lualine').setup {
