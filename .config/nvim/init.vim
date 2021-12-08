@@ -5,7 +5,7 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
 " --- vim-polyglot for syntax highlighting and autoindent with equals ---
 " {{{
     " disable polyglot languages that use other plugins
-    let g:polyglot_disabled = ['latex', 'svelte', 'javascript', 'typescript', 'json', 'php', 'yaml', 'perl']
+    let g:polyglot_disabled = ['latex', 'svelte', 'javascript', 'typescript', 'json', 'php', 'yaml', 'perl', 'clojure']
     Plug 'sheerun/vim-polyglot'
 
     " yes to jsdoc highlighting
@@ -64,6 +64,22 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
 
     " emmet for html expansion
     Plug 'mattn/emmet-vim'
+
+    " Conjure for REPL things
+    Plug 'Olical/conjure'
+    let g:conjure#log#wrap = 'true'
+
+    " sexp for sexping
+    Plug 'guns/vim-sexp'
+
+    let g:sexp_mappings = {
+        \ 'sexp_swap_list_backward':        '',
+        \ 'sexp_swap_list_forward':         '',
+        \ 'sexp_swap_element_backward':     '',
+        \ 'sexp_swap_element_forward':      '',
+    \ }
+
+    Plug 'tpope/vim-sexp-mappings-for-regular-people'
 " }}}
 
 
@@ -183,10 +199,28 @@ Plug 'tpope/vim-surround'
     " By default it uses ctrl rather than alt
     let g:tmux_navigator_no_mappings = 1
 
-    noremap <silent> <m-h> :TmuxNavigateLeft<cr>
-    noremap <silent> <m-j> :TmuxNavigateDown<cr>
-    noremap <silent> <m-k> :TmuxNavigateUp<cr>
-    noremap <silent> <m-l> :TmuxNavigateRight<cr>
+    nnoremap <silent> <m-h> :TmuxNavigateLeft<cr>
+    nnoremap <silent> <m-j> :TmuxNavigateDown<cr>
+    nnoremap <silent> <m-k> :TmuxNavigateUp<cr>
+    nnoremap <silent> <m-l> :TmuxNavigateRight<cr>
+
+    " TODO _this still doesn't work AAA_
+    function DoAltMappings()
+        unmap <silent> <m-h>
+        unmap <silent> <m-j>
+        unmap <silent> <m-k>
+        unmap <silent> <m-l>
+
+        nnoremap <silent> <m-h> :TmuxNavigateLeft<cr>
+        nnoremap <silent> <m-j> :TmuxNavigateDown<cr>
+        nnoremap <silent> <m-k> :TmuxNavigateUp<cr>
+        nnoremap <silent> <m-l> :TmuxNavigateRight<cr>
+    endfunction
+
+    augroup VIM_SEXP_MAPPING
+        autocmd!
+        autocmd FileType clojure,scheme,lisp,timl,fennel call DoAltMappings()
+    augroup END
 " }}}
 
 " --- Buffer management ---
@@ -497,7 +531,9 @@ require 'nvim-treesitter.configs'.setup {
     }
 }
 
-require('nvim-autopairs').setup{}
+require('nvim-autopairs').setup {
+    enable_check_bracket_line = false
+}
 require("nvim-autopairs.completion.compe").setup({
   map_cr = true, --  map <CR> on insert mode
   map_complete = true, -- it will auto insert `(` after select function or method item
