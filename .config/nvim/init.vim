@@ -37,26 +37,15 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
     " treesitter for thing parsing
     Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }
 
-    " compe for completion
-    " Plug 'hrsh7th/nvim-compe'
-    " set completeopt=menuone,noinsert,noselect
-
-    " inoremap <silent><expr> <C-Space> compe#complete()
-    " " for ssh where <C-Space> doesn't work
-    " inoremap <silent><expr> <C-.> compe#complete()
-
-    " " Use <Tab> and <S-Tab> to navigate through popup menu
-    " inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-    " inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-
     " Cmp for completion
+    " Need luasnip apparently
+    Plug 'L3MON4D3/LuaSnip'
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'hrsh7th/cmp-buffer'
     Plug 'hrsh7th/cmp-path'
     Plug 'hrsh7th/cmp-cmdline'
+    Plug 'PaterJason/cmp-conjure'
     Plug 'hrsh7th/nvim-cmp'
-    " Need luasnip apparently
-    Plug 'L3MON4D3/LuaSnip'
     set completeopt=menu,menuone,noselect
 " }}}
 
@@ -65,6 +54,13 @@ call plug#begin('~/.local/share/nvim/site/plugged/')
 " {{{
     Plug 'puremourning/vimspector'
     let g:vimspector_enable_mappings = 'HUMAN'
+" }}}
+
+" --- repls n stuff
+" {{{
+    Plug 'tpope/vim-dispatch'
+    Plug 'clojure-vim/vim-jack-in'
+    Plug 'radenling/vim-dispatch-neovim'
 " }}}
 
 " --- other misc language feature plugins ---
@@ -546,77 +542,93 @@ require 'nvim-treesitter.configs'.setup {
 require('nvim-autopairs').setup {
     enable_check_bracket_line = false
 }
--- require("nvim-autopairs.completion.compe").setup({
-  -- map_cr = true, --  map <CR> on insert mode
-  -- map_complete = true, -- it will auto insert `(` after select function or method item
-  -- auto_select = false,  -- auto select first item
--- })
 
 -- cmp
-local luasnip = require 'luasnip'
-local cmp = require 'cmp'
+local cmp = require('cmp')
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
 
-local has_words_before = function()
-  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
-end
+local icons = {
+    Text          = "",
+    Method        = "",
+    Function      = "",
+    Constructor   = "",
+    Field         = "ﰠ",
+    Variable      = "",
+    Class         = "ﴯ",
+    Interface     = "",
+    Module        = "",
+    Property      = "ﰠ",
+    Unit          = "塞",
+    Value         = "",
+    Enum          = "",
+    Keyword       = "",
+    Snippet       = "",
+    Color         = "",
+    File          = "",
+    Reference     = "",
+    Folder        = "",
+    EnumMember    = "",
+    Constant      = "",
+    Struct        = "פּ",
+    Event         = "",
+    Operator      = "",
+    TypeParameter = "",
+}
 
-cmp.setup({
+cmp.setup {
     snippet = {
-      -- REQUIRED - you must specify a snippet engine
-      expand = function(args)
-        require('luasnip').lsp_expand(args.body)
-      end,
+        expand = function(args)
+            require("luasnip").lsp_expand(args.body)
+        end,
+    },
+    formatting = {
+        -- Use icons and display completion source
+        format = function(entry, vim_item)
+            vim_item.kind = string.format(
+                '%s %s',
+                icons[vim_item.kind],
+                vim_item.kind
+            )
+
+            return vim_item
+        end,
     },
     mapping = {
-      ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
-      ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
-      ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
-      ["<Tab>"] = cmp.mapping(function(fallback)
-        if cmp.visible() then
-          cmp.select_next_item()
-        elseif luasnip.expand_or_jumpable() then
-          luasnip.expand_or_jump()
-        elseif has_words_before() then
-          cmp.complete()
-        else
-          fallback()
-        end
-      end, { "i", "s" }),
-
-    ["<S-Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, { "i", "s" }),
+        ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<C-Space>'] = cmp.mapping.complete(),
+        ['<C-e>'] = cmp.mapping.close(),
+        ['<CR>'] = cmp.mapping.confirm({ select = true }),
+        ['<Tab>'] = function(fallback)
+             if cmp.visible() then
+                    cmp.select_next_item()
+             elseif require('luasnip').expand_or_jumpable() then
+                    vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-expand-or-jump', true, true, true), '')
+             else
+                    fallback()
+             end
+        end,
+        ['<S-Tab>'] = function(fallback)
+             if cmp.visible() then
+                    cmp.select_prev_item()
+             elseif require('luasnip').jumpable(-1) then
+                    vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-jump-prev', true, true, true), '')
+             else
+                    fallback()
+             end
+        end,
     },
-    sources = cmp.config.sources({
-      { name = 'nvim_lsp' },
-      { name = 'luasnip' }, -- For luasnip users.
-    }, {
-      { name = 'buffer' },
-    })
-  })
-
-  -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
-  cmp.setup.cmdline('/', {
     sources = {
-      { name = 'buffer' }
-    }
-  })
+        { name = 'conjure' },
+        { name = 'luasnip' },
+        { name = 'nvim_lsp' },
+        { name = 'nvim_lua' },
+        { name = 'buffer' },
+        { name = 'path' },
+    },
+}
 
-  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
-  cmp.setup.cmdline(':', {
-    sources = cmp.config.sources({
-      { name = 'path' }
-    }, {
-      { name = 'cmdline' }
-    })
-  })
+cmp.event:on( 'confirm_done', cmp_autopairs.on_confirm_done())
 
 -- Lualine
 require('lualine').setup {
