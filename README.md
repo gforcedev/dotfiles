@@ -1,3 +1,6 @@
+# OLD
+This repo stopped being where I store my up-to-date dotfiles in December 2020. They now live [here](https://github.com/gforcedev/dotfiles2) and are managed with stow rather than using a bare repo - much nicer.
+
 # Gforcedev's Dotfiles
 Initialised with the tutorial at https://www.ackama.com/blog/posts/the-best-way-to-store-your-dotfiles-a-bare-git-repository-explained
 
